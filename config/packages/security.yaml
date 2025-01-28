@@ -13,6 +13,12 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api:
+            pattern: ^/api
+            stateless: true
+            http_basic: ~ # Active l'authentification basique
+            provider: app_user_provider
+        
         main:
             lazy: true
             provider: app_user_provider
@@ -36,6 +42,8 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        # Restreindre l'accès à l'API aux utilisateurs authentifiés
+        - { path: ^/api, roles: ROLE_USER }
 
 when@test:
     security:
