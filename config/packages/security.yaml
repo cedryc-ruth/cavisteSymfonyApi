@@ -13,11 +13,20 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        #Firewall pour obtenir le token JWT
+        login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
         api:
             pattern: ^/api
             stateless: true
-            http_basic: ~ # Active l'authentification basique
-            provider: app_user_provider
+            jwt: ~ # Active l'authentification JWT
         
         main:
             lazy: true
@@ -29,7 +38,7 @@ security:
             logout:
                 path: app_logout
                 # where to redirect after logout
-                # target: app_any_route
+                target: app_wine_index
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -42,8 +51,11 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        # Permet l'accès sans authentification
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
         # Restreindre l'accès à l'API aux utilisateurs authentifiés
-        - { path: ^/api, roles: ROLE_USER }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
 
 when@test:
     security:
